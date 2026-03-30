@@ -1,0 +1,193 @@
+<div class="contact-page">
+  <div class="container">
+    <!-- En-tête avec animation -->
+    <div class="text-center mb-5 animate-fade-in-up">
+      <h1 class="section-title">Свяжитесь с нами</h1>
+      <p class="section-subtitle">Мы готовы ответить на любые вопросы или помочь с бронированием</p>
+    </div>
+
+    <div class="row g-5">
+      <!-- Formulaire de contact -->
+      <div class="col-lg-7">
+        <div class="contact-form-card animate-slide-in-left">
+          <div class="card-header">
+            <i class="fas fa-paper-plane"></i>
+            <h3>Отправьте нам сообщение</h3>
+          </div>
+
+          <div class="card-body">
+            <!-- Messages de succès/erreur -->
+            @if (successMessage) {
+              <div class="alert alert-success animate-fade">
+                <i class="fas fa-check-circle"></i>
+                {{ successMessage }}
+              </div>
+            }
+            @if (errorMessage) {
+              <div class="alert alert-danger animate-fade">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ errorMessage }}
+              </div>
+            }
+
+            <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+              <!-- Champ Nom -->
+              <div class="form-group mb-4">
+                <label for="name" class="form-label">
+                  <i class="fas fa-user"></i> Полное имя
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  formControlName="name"
+                  class="form-control"
+                  [class.is-invalid]="name?.invalid && name?.touched"
+                  placeholder="Ваше полное имя"
+                />
+                @if (name?.invalid && name?.touched) {
+                  <div class="invalid-feedback">
+                    <i class="fas fa-exclamation-circle"></i> Это поле обязательно
+                  </div>
+                }
+              </div>
+
+              <!-- Champ Email -->
+              <div class="form-group mb-4">
+                <label for="email" class="form-label">
+                  <i class="fas fa-envelope"></i> Адрес электронной почты
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  formControlName="email"
+                  class="form-control"
+                  [class.is-invalid]="email?.invalid && email?.touched"
+                  placeholder="ваш@email.com"
+                />
+                @if (email?.invalid && email?.touched) {
+                  <div class="invalid-feedback">
+                    @if (email?.errors?.['required']) {
+                      <i class="fas fa-exclamation-circle"></i> Это поле обязательно
+                    }
+                    @if (email?.errors?.['email']) {
+                      <i class="fas fa-exclamation-circle"></i> Неверный адрес электронной почты
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Champ Sujet -->
+              <div class="form-group mb-4">
+                <label for="subject" class="form-label">
+                  <i class="fas fa-tag"></i> Тема
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  formControlName="subject"
+                  class="form-control"
+                  [class.is-invalid]="subject?.invalid && subject?.touched"
+                  placeholder="Тема вашего сообщения"
+                />
+                @if (subject?.invalid && subject?.touched) {
+                  <div class="invalid-feedback">
+                    <i class="fas fa-exclamation-circle"></i> Это поле обязательно
+                  </div>
+                }
+              </div>
+
+              <!-- Champ Message -->
+              <div class="form-group mb-4">
+                <label for="message" class="form-label">
+                  <i class="fas fa-comment"></i> Сообщение
+                </label>
+                <textarea
+                  id="message"
+                  formControlName="message"
+                  class="form-control"
+                  [class.is-invalid]="message?.invalid && message?.touched"
+                  rows="5"
+                  placeholder="Ваше сообщение..."
+                ></textarea>
+                @if (message?.invalid && message?.touched) {
+                  <div class="invalid-feedback">
+                    @if (message?.errors?.['required']) {
+                      <i class="fas fa-exclamation-circle"></i> Это поле обязательно
+                    }
+                    @if (message?.errors?.['minlength']) {
+                      <i class="fas fa-exclamation-circle"></i> Сообщение должно содержать не менее 10 символов
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Bouton d'envoi -->
+              <button
+                type="submit"
+                class="btn-submit"
+                [disabled]="contactForm.invalid || isLoading"
+              >
+                @if (isLoading) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                <i class="fas fa-paper-plane me-2"></i>
+                {{ isLoading ? 'Отправка...' : 'Отправить сообщение' }}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informations de contact et carte -->
+      <div class="col-lg-5">
+        <div class="contact-info animate-slide-in-right">
+          <!-- Cartes d'infos -->
+          <div class="info-card">
+            <div class="info-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="info-content">
+              <h4>Адрес</h4>
+              <p>123 Елисейские Поля<br>75008 Париж, Франция</p>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">
+              <i class="fas fa-phone-alt"></i>
+            </div>
+            <div class="info-content">
+              <h4>Телефон</h4>
+              <p><a href="tel:+33123456789">+33 1 23 45 67 89</a></p>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="info-content">
+              <h4>Электронная почта</h4>
+              <p><a href="mailto:contact@lilibooking.com">contact@lilibooking.com</a></p>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="info-content">
+              <h4>Часы работы</h4>
+              <p>Пн - Пт: 9:00 - 19:00<br>Сб: 10:00 - 17:00</p>
+            </div>
+          </div>
+
+          <!-- Carte interactive (Leaflet) -->
+          <div class="map-container">
+            <div id="contact-map" style="height: 250px; border-radius: 8px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

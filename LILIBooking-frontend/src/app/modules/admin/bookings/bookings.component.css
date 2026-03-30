@@ -1,0 +1,426 @@
+/* ===== VARIABLES ===== */
+:root {
+  --primary: #446965;
+  --primary-dark: #005a60;
+  --accent: #d9bb80;
+  --bg-page: #f8fafc;
+  --card-white: #ffffff;
+  --text-title: #1e293b;
+  --text-body: #334155;
+  --border-light: #e2e8f0;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.02);
+  --shadow-hover: 0 8px 20px rgba(68, 105, 101, 0.08);
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
+
+/* ===== PAGE ===== */
+.admin-bookings {
+  background: var(--bg-page);
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', sans-serif;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  background: var(--card-white);
+  padding: 1.5rem 2rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-section h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-title);
+  margin: 0;
+  position: relative;
+}
+
+.header-section h1::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.header-section p {
+  margin: 0.5rem 0 0;
+  color: #64748b;
+}
+
+.stats-badge {
+  display: flex;
+  gap: 1rem;
+  background: var(--bg-page);
+  padding: 0.5rem 1rem;
+  border-radius: 40px;
+}
+
+.stat-item {
+  padding: 0.2rem 1rem;
+  border-radius: 40px;
+  background: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.stat-item.total-revenue {
+  background: rgba(68, 105, 101, 0.1);
+  color: var(--primary);
+}
+
+/* ===== FILTERS ===== */
+.filters-bar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  flex: 2;
+  position: relative;
+  min-width: 250px;
+}
+
+.search-box .search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 2.5rem;
+  border: 1px solid var(--border-light);
+  border-radius: 40px;
+  background: var(--card-white);
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(68, 105, 101, 0.1);
+}
+
+.filter-group select,
+.filter-group input[type="date"] {
+  padding: 0.8rem 2rem 0.8rem 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: 40px;
+  background: var(--card-white);
+  font-size: 0.9rem;
+  cursor: pointer;
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+}
+
+.filter-group input[type="date"] {
+  background-image: none;
+  padding: 0.8rem 1rem;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--card-white);
+  border-radius: 40px;
+  border: 1px solid var(--border-light);
+  padding: 0 1rem;
+}
+
+.date-range input {
+  border: none;
+  padding: 0.8rem 0;
+  background: transparent;
+  width: 120px;
+  cursor: pointer;
+}
+
+.date-range input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.date-range span {
+  color: #94a3b8;
+}
+
+/* ===== LOADING SKELETON ===== */
+.skeleton-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.skeleton-card {
+  background: var(--card-white);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.skeleton-line {
+  height: 1rem;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 4px;
+  margin-bottom: 0.8rem;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+.skeleton-line.medium {
+  width: 80%;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== TABLE ===== */
+.table-responsive {
+  overflow-x: auto;
+  background: transparent;
+  border-radius: var(--radius-lg);
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  background: transparent;
+}
+
+.bookings-table thead th {
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #64748b;
+  background: transparent !important;
+  border-bottom: 2px solid var(--border-light);
+  white-space: nowrap;
+}
+
+.bookings-table tbody tr {
+  background: var(--card-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.bookings-table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.bookings-table tbody td {
+  padding: 1rem 1rem;
+  color: var(--text-body);
+  border: none;
+  background: inherit;
+  vertical-align: middle;
+}
+
+.bookings-table tbody td:first-child {
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+.bookings-table tbody td:last-child {
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.nights {
+  font-weight: 500;
+  color: var(--primary-dark);
+}
+
+.price {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* ===== PAGINATION ===== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+.pagination button {
+  background: var(--card-white);
+  border: 1px solid var(--border-light);
+  border-radius: 40px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  color: var(--primary);
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+/* ===== ALERTS ===== */
+.alert {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.alert-danger {
+  background: #fee2e2;
+  border-left: 4px solid #e53e3e;
+  color: #9b2c2c;
+}
+
+.btn-retry {
+  margin-left: 1rem;
+  background: none;
+  border: 1px solid currentColor;
+  border-radius: 40px;
+  padding: 0.2rem 1rem;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .admin-bookings {
+    padding: 1rem;
+  }
+
+  .header-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-section h1 {
+    font-size: 1.5rem;
+  }
+
+  .stats-badge {
+    justify-content: center;
+  }
+
+  .filters-bar {
+    flex-direction: column;
+  }
+
+  .search-box,
+  .filter-group select,
+  .date-range {
+    width: 100%;
+  }
+
+  .date-range {
+    justify-content: space-between;
+  }
+
+  .date-range input {
+    width: calc(50% - 1rem);
+  }
+
+  .bookings-table thead {
+    display: none;
+  }
+
+  .bookings-table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    padding: 1rem;
+  }
+
+  .bookings-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed var(--border-light);
+    text-align: right;
+  }
+
+  .bookings-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .bookings-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #475569;
+    text-align: left;
+    width: 40%;
+    padding-right: 1rem;
+  }
+
+  .nights,
+  .price {
+    text-align: right;
+  }
+}

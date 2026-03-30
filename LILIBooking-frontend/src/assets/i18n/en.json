@@ -1,0 +1,47 @@
+{
+  "APP": {
+    "TITLE": "LILIBooking - Hotel Reservation",
+    "DESCRIPTION": "Your online hotel booking platform"
+  },
+  "AUTH": {
+    "LOGIN": "Login",
+    "REGISTER": "Register",
+    "LOGOUT": "Logout",
+    "EMAIL": "Email address",
+    "PASSWORD": "Password",
+    "FIRST_NAME": "First name",
+    "LAST_NAME": "Last name",
+    "PHONE": "Phone",
+    "LANGUAGE": "Language",
+    "SUBMIT": "Submit",
+    "FORGOT_PASSWORD": "Forgot password?",
+    "NO_ACCOUNT": "Don't have an account?",
+    "HAVE_ACCOUNT": "Already have an account?",
+    "LOGIN_SUCCESS": "Login successful!",
+    "REGISTER_SUCCESS": "Registration successful!"
+  },
+  "CONTACT": {
+    "TITLE": "Contact Us",
+    "NAME": "Full name",
+    "EMAIL": "Email",
+    "SUBJECT": "Subject",
+    "MESSAGE": "Message",
+    "SEND": "Send message",
+    "SUCCESS": "Message sent successfully!",
+    "ERROR": "Error sending message"
+  },
+  "NAV": {
+    "HOME": "Home",
+    "HOTELS": "Hotels",
+    "CONTACT": "Contact",
+    "LOGIN": "Login",
+    "REGISTER": "Register",
+    "PROFILE": "My profile"
+  },
+  "VALIDATION": {
+    "REQUIRED": "This field is required",
+    "EMAIL": "Please enter a valid email address",
+    "MIN_LENGTH": "Minimum {min} characters",
+    "PASSWORD_MISMATCH": "Passwords do not match"
+  }
+}

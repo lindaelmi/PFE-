@@ -1,0 +1,28 @@
+// Palette de couleurs LILIBooking
+$primary-color: #005a60;
+$secondary-color: #446965;
+$accent-color: #d9bb80;
+$light-color: #f8f9fa;
+$dark-color: #343a40;
+
+// Dégradés
+$gradient-primary: linear-gradient(135deg, #005a60 0%, #00838f 100%);
+$gradient-secondary: linear-gradient(135deg, #446965 0%, #5a857f 100%);
+$gradient-accent: linear-gradient(135deg, #d9bb80 0%, #f4d06f 100%);
+
+// Ombres
+$shadow-sm: 0 2px 8px rgba(0, 90, 96, 0.1);
+$shadow-md: 0 4px 16px rgba(0, 90, 96, 0.15);  // AJOUTÉ
+$shadow-lg: 0 8px 32px rgba(0, 90, 96, 0.2);
+$shadow-xl: 0 16px 48px rgba(0, 90, 96, 0.25);
+
+// Bordures
+$border-radius-sm: 8px;
+$border-radius-md: 12px;
+$border-radius-lg: 20px;
+$border-radius-xl: 30px;
+
+// Transitions
+$transition-fast: all 0.2s ease;
+$transition-medium: all 0.3s ease;
+$transition-slow: all 0.5s ease;

@@ -1,0 +1,130 @@
+<div class="admin-users">
+  <div class="container py-4">
+    <!-- Header with stats -->
+    <div class="header-section">
+      <div>
+        <h1>Управление пользователями</h1>
+        <p class="text-muted">Просмотр, редактирование ролей и удаление пользователей</p>
+      </div>
+      <div class="stats-badge">
+        <span class="stat-item">Всего: {{ users.length }}</span>
+        <span class="stat-item admin">Администраторы: {{ adminCount }}</span>
+        <span class="stat-item user">Пользователи: {{ userCount }}</span>
+      </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="filters-bar">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" placeholder="Поиск по имени, email или ID..." [(ngModel)]="searchTerm" (input)="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <select [(ngModel)]="filterRole" (change)="applyFilters()">
+          <option value="">Все роли</option>
+          <option value="admin">Администраторы</option>
+          <option value="user">Пользователи</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Loading skeleton -->
+    <div *ngIf="isLoading" class="skeleton-container">
+      <div class="skeleton-card" *ngFor="let _ of [1,2,3,4,5]">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line medium"></div>
+      </div>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="errorMessage && !isLoading" class="alert alert-danger">
+      <i class="fas fa-exclamation-circle me-2"></i> {{ errorMessage }}
+      <button class="btn-retry" (click)="loadUsers()">Повторить</button>
+    </div>
+
+    <!-- Users table -->
+    <div *ngIf="!isLoading && !errorMessage" class="table-responsive">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Роль</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of paginatedUsers">
+            <td data-label="ID">{{ user.id }}</td>
+            <td data-label="Email">{{ user.email }}</td>
+            <td data-label="Имя">{{ user.firstName || '—' }}</td>
+            <td data-label="Фамилия">{{ user.lastName || '—' }}</td>
+            <td data-label="Роль">
+              <span *ngIf="editingUser?.id !== user.id" 
+                    class="role-badge" 
+                    [class.admin]="user.role === 'admin'" 
+                    [class.user]="user.role === 'user'">
+                {{ user.role === 'admin' ? 'Администратор' : 'Пользователь' }}
+              </span>
+              <select *ngIf="editingUser?.id === user.id" 
+                      class="role-select" 
+                      [(ngModel)]="newRole">
+                <option value="user">Пользователь</option>
+                <option value="admin">Администратор</option>
+              </select>
+            </td>
+            <td data-label="Действия" class="actions">
+              <ng-container *ngIf="editingUser?.id !== user.id">
+                <button class="btn-icon edit" (click)="startEditRole(user)" title="Редактировать роль">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon delete" (click)="confirmDelete(user)" title="Удалить пользователя">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </ng-container>
+              <ng-container *ngIf="editingUser?.id === user.id">
+                <button class="btn-icon save" (click)="saveRole()" title="Сохранить">
+                  <i class="fas fa-check"></i>
+                </button>
+                <button class="btn-icon cancel" (click)="cancelEdit()" title="Отмена">
+                  <i class="fas fa-times"></i>
+                </button>
+              </ng-container>
+            </td>
+          </tr>
+          <tr *ngIf="filteredUsers.length === 0">
+            <td colspan="6" class="text-center">Нет пользователей, соответствующих фильтрам</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="filteredUsers.length > 0" class="pagination">
+      <button (click)="prevPage()" [disabled]="currentPage === 1"><i class="fas fa-chevron-left"></i></button>
+      <span>Страница {{ currentPage }} из {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages"><i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <!-- Confirmation modal -->
+    <div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+      <div class="modal-container small" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Подтверждение удаления</h3>
+          <button class="close-btn" (click)="closeDeleteModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <p>Вы уверены, что хотите удалить пользователя <strong>{{ userToDelete?.email }}</strong>?</p>
+          <p class="text-muted">Это действие нельзя отменить.</p>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="closeDeleteModal()">Отмена</button>
+          <button class="btn-delete" (click)="deleteUserConfirmed()">Удалить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

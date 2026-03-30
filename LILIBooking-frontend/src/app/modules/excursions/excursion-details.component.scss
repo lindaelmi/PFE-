@@ -1,0 +1,39 @@
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+}
+
+.category-badge {
+  background: rgba(13, 110, 253, 0.1);
+  color: #0d6efd;
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.info-card {
+  text-align: center;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.sticky-top {
+  z-index: 1000;
+}
+
+.price-tag {
+  padding: 1rem 0;
+  border-bottom: 1px solid #dee2e6;
+  border-top: 1px solid #dee2e6;
+}
+
+@media (max-width: 992px) {
+  .sticky-top {
+    position: relative !important;
+    top: 0 !important;
+  }
+}

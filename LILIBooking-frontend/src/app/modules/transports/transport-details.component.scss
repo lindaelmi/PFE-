@@ -1,0 +1,34 @@
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+}
+
+.transport-route-details {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+
+  .route-line-vertical {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+}
+
+.sticky-top {
+  z-index: 1000;
+}
+
+.price-tag {
+  padding: 1rem 0;
+  border-bottom: 1px solid #dee2e6;
+  border-top: 1px solid #dee2e6;
+}
+
+@media (max-width: 992px) {
+  .sticky-top {
+    position: relative !important;
+    top: 0 !important;
+  }
+}

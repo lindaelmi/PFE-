@@ -1,0 +1,47 @@
+{
+  "APP": {
+    "TITLE": "LILIBooking - Réservation d'Hôtels",
+    "DESCRIPTION": "Votre plateforme de réservation d'hôtels en ligne"
+  },
+  "AUTH": {
+    "LOGIN": "Connexion",
+    "REGISTER": "Inscription",
+    "LOGOUT": "Déconnexion",
+    "EMAIL": "Adresse email",
+    "PASSWORD": "Mot de passe",
+    "FIRST_NAME": "Prénom",
+    "LAST_NAME": "Nom",
+    "PHONE": "Téléphone",
+    "LANGUAGE": "Langue",
+    "SUBMIT": "Valider",
+    "FORGOT_PASSWORD": "Mot de passe oublié ?",
+    "NO_ACCOUNT": "Pas encore de compte ?",
+    "HAVE_ACCOUNT": "Déjà un compte ?",
+    "LOGIN_SUCCESS": "Connexion réussie !",
+    "REGISTER_SUCCESS": "Inscription réussie !"
+  },
+  "CONTACT": {
+    "TITLE": "Contactez-nous",
+    "NAME": "Nom complet",
+    "EMAIL": "Email",
+    "SUBJECT": "Sujet",
+    "MESSAGE": "Message",
+    "SEND": "Envoyer le message",
+    "SUCCESS": "Message envoyé avec succès !",
+    "ERROR": "Erreur lors de l'envoi du message"
+  },
+  "NAV": {
+    "HOME": "Accueil",
+    "HOTELS": "Hôtels",
+    "CONTACT": "Contact",
+    "LOGIN": "Connexion",
+    "REGISTER": "Inscription",
+    "PROFILE": "Mon profil"
+  },
+  "VALIDATION": {
+    "REQUIRED": "Ce champ est requis",
+    "EMAIL": "Veuillez entrer une adresse email valide",
+    "MIN_LENGTH": "Minimum {min} caractères",
+    "PASSWORD_MISMATCH": "Les mots de passe ne correspondent pas"
+  }
+}

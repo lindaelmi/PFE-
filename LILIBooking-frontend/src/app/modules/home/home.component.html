@@ -1,0 +1,247 @@
+<!-- ============================================
+     HEADER MODERNE (composant)
+     ============================================ -->
+<app-header></app-header>
+
+<!-- Espace pour compenser le header sticky -->
+<div class="header-spacer"></div>
+
+<!-- ============================================
+     SECTION HERO AVEC FORMULAIRE DE RECHERCHE
+     ============================================ -->
+<section class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title animate-fade-in">
+      Бронируйте отели и экскурсии по всему миру
+    </h1>
+    <p class="hero-subtitle animate-fade-in">
+      Откройте для себя более 10 000 вариантов в более чем 50 странах Европы, Азии и Африки
+    </p>
+    <div class="search-container animate-slide-up">
+      <!-- Sélecteur de type de réservation : uniquement Hôtel -->
+      <div class="booking-type-selector">
+        <button *ngFor="let type of bookingTypes" 
+                class="type-btn" 
+                [class.active]="searchData.bookingType === type.value"
+                (click)="searchData.bookingType = type.value">
+          <i [class]="'fas ' + type.icon"></i>
+          <span>{{ type.label }}</span>
+        </button>
+      </div>
+      <!-- Formulaire de recherche -->
+      <div class="search-form">
+        <!-- DESTINATION AVEC SUGGESTIONS -->
+        <div class="form-group" style="position: relative;">
+          <label for="destination">
+            <i class="fas fa-map-marker-alt"></i> Назначение
+          </label>
+          <input type="text" 
+                 id="destination" 
+                 class="form-control"
+                 [(ngModel)]="searchData.destination"
+                 (input)="onDestinationSearch($event)"
+                 (focus)="showSuggestions = true"
+                 (blur)="hideSuggestions()"
+                 placeholder="Париж, Франция, Токио, Япония..."
+                 autocomplete="off">
+          <div class="destination-suggestions" *ngIf="showSuggestions && filteredDestinations.length > 0">
+            <div *ngFor="let dest of filteredDestinations" 
+                 class="suggestion-item"
+                 (click)="selectDestination(dest)">
+              <strong>{{ dest.name }}</strong>, {{ dest.country }}
+            </div>
+          </div>
+        </div>
+        <!-- Date d'arrivée -->
+        <div class="form-group">
+          <label for="checkIn"><i class="fas fa-sign-in-alt"></i> Заезд</label>
+          <input type="date" id="checkIn" class="form-control" [(ngModel)]="searchData.checkIn">
+        </div>
+        <!-- Date de départ -->
+        <div class="form-group">
+          <label for="checkOut"><i class="fas fa-sign-out-alt"></i> Выезд</label>
+          <input type="date" id="checkOut" class="form-control" [(ngModel)]="searchData.checkOut">
+        </div>
+
+        <!-- Affichage d'une erreur globale pour les dates -->
+        <div class="form-group" style="grid-column: 1/-1; margin-top: -0.5rem;">
+          <div *ngIf="dateError" class="alert alert-danger" style="font-size: 0.85rem; padding: 0.5rem; margin-top: 0.25rem;">
+            <i class="fas fa-exclamation-circle"></i> {{ dateError }}
+          </div>
+        </div>
+
+        <!-- Adultes -->
+        <div class="form-group">
+          <label for="adults"><i class="fas fa-user"></i> Взрослые</label>
+          <select id="adults" class="form-control" [(ngModel)]="searchData.adults">
+            <option *ngFor="let i of [1,2,3,4,5,6]">{{ i }}</option>
+          </select>
+        </div>
+        <!-- Enfants -->
+        <div class="form-group">
+          <label for="children"><i class="fas fa-child"></i> Дети</label>
+          <select id="children" class="form-control" [(ngModel)]="searchData.children">
+            <option *ngFor="let i of [0,1,2,3,4]">{{ i }}</option>
+          </select>
+        </div>
+        <!-- Chambres (toujours visible) -->
+        <div class="form-group">
+          <label for="rooms"><i class="fas fa-bed"></i> Номера</label>
+          <select id="rooms" class="form-control" [(ngModel)]="searchData.rooms">
+            <option *ngFor="let i of [1,2,3,4]">{{ i }}</option>
+          </select>
+        </div>
+      </div>
+      <!-- Bouton de recherche -->
+      <button class="search-btn" (click)="search()">
+        <i class="fas fa-search"></i> Найти сейчас
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     SECTION DESTINATIONS POPULAIRES
+     ============================================ -->
+<section class="destinations-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Популярные направления</h2>
+      <p class="section-subtitle">Исследуйте самые востребованные направления</p>
+    </div>
+    <!-- Tabs des continents avec filtrage -->
+    <div class="continent-tabs">
+      <button class="continent-tab" [class.active]="selectedContinent === 'Europe'" (click)="filterByContinent('Europe')">
+        <i class="fas fa-landmark"></i> Европа
+      </button>
+      <button class="continent-tab" [class.active]="selectedContinent === 'Asie'" (click)="filterByContinent('Asie')">
+        <i class="fas fa-archway"></i> Азия
+      </button>
+      <button class="continent-tab" [class.active]="selectedContinent === 'Afrique'" (click)="filterByContinent('Afrique')">
+        <i class="fas fa-globe-africa"></i> Африка
+      </button>
+    </div>
+    <!-- Grille des destinations filtrées -->
+    <div class="destinations-grid">
+      <div class="destination-card" *ngFor="let destination of filteredDestinationsByContinent; trackBy: trackByDestinationName">
+        <div class="destination-image" 
+             [style.backgroundImage]="'url(' + getDestinationImage(destination) + ')'"
+             style="background-size: cover; background-position: center; height: 200px; width: 100%; border-radius: 8px 8px 0 0;">
+          <div class="destination-overlay">
+            <button class="btn btn-accent" (click)="viewOffers(destination)">Посмотреть предложения</button>
+          </div>
+        </div>
+        <div class="destination-info">
+          <h3>{{ destination.name }}</h3>
+          <div class="country">{{ destination.country }}</div>
+          <p class="description">{{ destination.description }}</p>
+          <div class="activities mb-2">
+            <span class="badge badge-primary" *ngFor="let activity of destination.popularActivities.slice(0, 2)">
+              {{ activity }}
+            </span>
+          </div>
+          <div class="destination-stats">
+            <span class="hotel-count">
+              <i class="fas fa-hotel"></i> {{ destination.hotelCount }} отелей
+            </span>
+            <span class="price">От {{ destination.averagePrice }}€</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     SECTION SERVICES & AVANTAGES
+     ============================================ -->
+<section class="services-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title text-light">Почему выбирают LILIBooking?</h2>
+      <p class="section-subtitle">Эксклюзивные услуги</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon"><i class="fas fa-shield-alt"></i></div>
+        <h4>Безопасное бронирование</h4>
+        <p>SSL-шифрование платежей</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"><i class="fas fa-percent"></i></div>
+        <h4>Гарантия лучшей цены</h4>
+        <p>Эксклюзивные предложения</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"><i class="fas fa-headset"></i></div>
+        <h4>Поддержка 24/7</h4>
+        <p>Многоязычная помощь</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"><i class="fas fa-language"></i></div>
+        <h4>Многоязычие</h4>
+        <p>Французский, Английский, Русский</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"><i class="fas fa-coins"></i></div>
+        <h4>Мультивалютность</h4>
+        <p>€, $, ₽ и другие</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"><i class="fas fa-mobile-alt"></i></div>
+        <h4>Мобильная версия</h4>
+        <p>Бронирование на любых устройствах</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     SECTION AVIS CLIENTS
+     ============================================ -->
+<section class="reviews-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Отзывы наших клиентов</h2>
+      <p class="section-subtitle">Что они думают о нас</p>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card" *ngFor="let review of reviews; trackBy: trackByReviewName">
+        <div class="review-header">
+          <div class="review-avatar">{{ review.avatar }}</div>
+          <div class="reviewer-info">
+            <h4>{{ review.name }}</h4>
+            <div class="reviewer-location">
+              <i class="fas fa-map-marker-alt"></i> {{ review.country }}
+            </div>
+          </div>
+        </div>
+        <div class="review-stars">
+          <ng-container *ngIf="getReviewStars(review.rating) as stars">
+            <i class="fas fa-star" *ngFor="let s of [].constructor(stars.full)"></i>
+            <i class="far fa-star" *ngFor="let s of [].constructor(stars.empty)"></i>
+          </ng-container>
+        </div>
+        <p class="review-text">"{{ review.comment }}"</p>
+        <div class="review-date">
+          <i class="far fa-calendar"></i> {{ review.date }}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     SECTION CARTE INTERACTIVE
+     ============================================ -->
+<section class="map-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Исследуйте наши направления</h2>
+      <p class="section-subtitle">Интерактивная карта</p>
+    </div>
+    <div class="map-container" style="height: 400px;">
+      <app-map [destinations]="destinations"></app-map>
+    </div>
+  </div>
+</section>

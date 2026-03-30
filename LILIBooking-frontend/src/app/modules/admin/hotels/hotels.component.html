@@ -1,0 +1,174 @@
+<div class="admin-hotels">
+  <div class="container py-4">
+    <!-- Header -->
+    <div class="header-section">
+      <div>
+        <h1>Управление отелями</h1>
+        <p class="text-muted">Добавляйте, редактируйте и удаляйте отели</p>
+      </div>
+      <button class="btn-add" (click)="openAddModal()">
+        <i class="fas fa-plus"></i> Добавить отель
+      </button>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="filters-bar">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" placeholder="Поиск по названию, городу или стране..." [(ngModel)]="searchTerm" (input)="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <select [(ngModel)]="filterContinent" (change)="applyFilters()">
+          <option value="">Все континенты</option>
+          <option value="Европа">Европа</option>
+          <option value="Азия">Азия</option>
+          <option value="Африка">Африка</option>
+          <option value="Америка">Америка</option>
+          <option value="Океания">Океания</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Loading skeleton -->
+    <div *ngIf="isLoading" class="skeleton-container">
+      <div class="skeleton-card" *ngFor="let _ of [1,2,3,4,5]">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line medium"></div>
+      </div>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="errorMessage && !isLoading" class="alert alert-danger">
+      <i class="fas fa-exclamation-circle me-2"></i> {{ errorMessage }}
+      <button class="btn-retry" (click)="loadHotels()">Повторить</button>
+    </div>
+
+    <!-- Hotels table -->
+    <div *ngIf="!isLoading && !errorMessage" class="table-responsive">
+      <table class="hotels-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Город</th>
+            <th>Страна</th>
+            <th>Континент</th>
+            <th>Звезды</th>
+            <th>Цена (€)</th>
+            <th>Рейтинг</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let hotel of paginatedHotels">
+            <td data-label="ID">{{ hotel.id }}</td>
+            <td data-label="Название">{{ hotel.name }}</td>
+            <td data-label="Город">{{ hotel.city }}</td>
+            <td data-label="Страна">{{ hotel.country }}</td>
+            <td data-label="Континент">{{ hotel.continent }}</td>
+            <td data-label="Звезды" class="stars">
+              <span *ngFor="let star of getStarsArray(hotel.stars)" class="star-icon">★</span>
+            </td>
+            <td data-label="Цена" class="price">{{ hotel.pricePerNight }}€</td>
+            <td data-label="Рейтинг" class="rating">
+              <span class="rating-value">{{ hotel.rating }}</span>
+              <span class="rating-max">/5</span>
+              <i class="fas fa-star star-small"></i>
+            </td>
+            <td data-label="Действия" class="actions">
+              <button class="btn-icon edit" (click)="openEditModal(hotel)" title="Редактировать">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-icon delete" (click)="deleteHotel(hotel.id)" title="Удалить">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredHotels.length === 0">
+            <td colspan="9" class="text-center">Нет отелей, соответствующих фильтрам</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="filteredHotels.length > 0" class="pagination">
+      <button (click)="prevPage()" [disabled]="currentPage === 1"><i class="fas fa-chevron-left"></i></button>
+      <span>Страница {{ currentPage }} из {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages"><i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <!-- Modal for add/edit -->
+    <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>{{ editingHotel ? 'Редактировать отель' : 'Добавить отель' }}</h3>
+          <button class="close-btn" (click)="closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="saveHotel()" #hotelForm="ngForm">
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Название *</label>
+                <input type="text" [(ngModel)]="hotelFormData.name" name="name" required>
+              </div>
+              <div class="form-field">
+                <label>Город *</label>
+                <input type="text" [(ngModel)]="hotelFormData.city" name="city" required>
+              </div>
+              <div class="form-field">
+                <label>Страна *</label>
+                <input type="text" [(ngModel)]="hotelFormData.country" name="country" required>
+              </div>
+              <div class="form-field">
+                <label>Континент *</label>
+                <select [(ngModel)]="hotelFormData.continent" name="continent" required>
+                  <option value="Европа">Европа</option>
+                  <option value="Азия">Азия</option>
+                  <option value="Африка">Африка</option>
+                  <option value="Америка">Америка</option>
+                  <option value="Океания">Океания</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Звезды (1-5)</label>
+                <input type="number" [(ngModel)]="hotelFormData.stars" name="stars" min="1" max="5">
+              </div>
+              <div class="form-field">
+                <label>Цена за ночь (€)</label>
+                <input type="number" [(ngModel)]="hotelFormData.pricePerNight" name="pricePerNight" min="0">
+              </div>
+              <div class="form-field">
+                <label>Рейтинг (0-5)</label>
+                <input type="number" step="0.1" [(ngModel)]="hotelFormData.rating" name="rating" min="0" max="5">
+              </div>
+              <div class="form-field">
+                <label>Количество отзывов</label>
+                <input type="number" [(ngModel)]="hotelFormData.reviewCount" name="reviewCount" min="0">
+              </div>
+              <div class="form-field full-width">
+                <label>Описание</label>
+                <textarea rows="3" [(ngModel)]="hotelFormData.description" name="description"></textarea>
+              </div>
+              <div class="form-field full-width">
+                <label>Удобства (через запятую)</label>
+                <input type="text" [(ngModel)]="hotelFormData.amenities" name="amenities" placeholder="WiFi, SPA, Бассейн, ...">
+              </div>
+              <div class="form-field full-width">
+                <label class="checkbox-label">
+                  <input type="checkbox" [(ngModel)]="hotelFormData.isActive" name="isActive">
+                  Активен
+                </label>
+              </div>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn-cancel" (click)="closeModal()">Отмена</button>
+              <button type="submit" class="btn-save" [disabled]="!hotelForm.form.valid">Сохранить</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

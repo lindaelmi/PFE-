@@ -1,0 +1,132 @@
+/* Remplacer @import par @use */
+@use '../../../assets/scss/variables' as *;
+@use '../../../assets/scss/mixins' as *;
+
+.lili-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  background: transparent;
+
+  &.scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: $shadow-md;  // MAINTENANT DÉFINI
+  }
+
+  .navbar {
+    padding: 1rem 0;
+
+    &-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1.5rem;
+      text-decoration: none;
+
+      .logo-icon {
+        font-size: 2rem;
+      }
+
+      .logo-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+
+        .logo-primary {
+          color: $primary-color;
+          font-size: 1.2em;
+        }
+
+        .logo-secondary {
+          color: $accent-color;
+          font-size: 0.8em;
+          font-weight: 600;
+        }
+      }
+    }
+
+    &-nav {
+      .nav-link {
+        color: $dark-color;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: $border-radius-lg;
+        transition: $transition-fast;
+
+        &:hover {
+          color: $primary-color;
+          background: rgba($primary-color, 0.1);
+        }
+
+        &.active {
+          color: $primary-color;
+          font-weight: 600;
+        }
+      }
+    }
+
+    &-toggler {
+      border: none;
+      color: $primary-color;
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.lili-main {
+  min-height: 100vh;
+  padding-top: 80px;
+}
+
+.lili-footer {
+  background: $gradient-primary;
+  color: white;
+  padding: 3rem 0 1.5rem;
+
+  .footer-logo {
+    h3 {
+      color: white;
+    }
+  }
+
+  .social-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    .social-link {
+      color: white;
+      font-size: 1.2rem;
+      transition: $transition-fast;
+
+      &:hover {
+        color: $accent-color;
+      }
+    }
+  }
+}
+
+.scroll-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  background: $accent-color;
+  border: none;
+  border-radius: 50%;
+  color: $dark-color;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 1000;
+  transition: $transition-medium;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+}

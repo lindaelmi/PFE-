@@ -1,0 +1,89 @@
+<div class="admin-bookings">
+  <div class="container py-4">
+    <!-- Header with stats -->
+    <div class="header-section">
+      <div>
+        <h1>Управление бронированиями</h1>
+        <p class="text-muted">Просмотр и управление бронированиями клиентов</p>
+      </div>
+      <div class="stats-badge">
+        <span class="stat-item">Всего: {{ bookings.length }}</span>
+        <span class="stat-item total-revenue">Выручка: {{ totalRevenue }}€</span>
+      </div>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="filters-bar">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" placeholder="Поиск по отелю, клиенту или ID..." [(ngModel)]="searchTerm" (input)="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <select [(ngModel)]="filterHotel" (change)="applyFilters()">
+          <option value="">Все отели</option>
+          <option *ngFor="let hotel of hotelNames" [value]="hotel">{{ hotel }}</option>
+        </select>
+      </div>
+      <div class="filter-group date-range">
+        <input type="date" [(ngModel)]="dateFrom" (change)="applyFilters()" placeholder="С">
+        <span>—</span>
+        <input type="date" [(ngModel)]="dateTo" (change)="applyFilters()" placeholder="По">
+      </div>
+    </div>
+
+    <!-- Loading skeleton -->
+    <div *ngIf="isLoading" class="skeleton-container">
+      <div class="skeleton-card" *ngFor="let _ of [1,2,3,4,5]">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line medium"></div>
+      </div>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="errorMessage && !isLoading" class="alert alert-danger">
+      <i class="fas fa-exclamation-circle me-2"></i> {{ errorMessage }}
+      <button class="btn-retry" (click)="loadBookings()">Повторить</button>
+    </div>
+
+    <!-- Bookings table -->
+    <div *ngIf="!isLoading && !errorMessage" class="table-responsive">
+      <table class="bookings-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Отель</th>
+            <th>Клиент</th>
+            <th>Номер</th>
+            <th>Заезд</th>
+            <th>Выезд</th>
+            <th>Ночей</th>
+            <th>Сумма</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of paginatedBookings; let i = index">
+            <td data-label="ID">{{ b.id || i+1 }}</td>
+            <td data-label="Отель">{{ b.hotelName }}</td>
+            <td data-label="Клиент">{{ b.userEmail || 'Не указан' }}</td>
+            <td data-label="Номер">{{ b.roomType }}</td>
+            <td data-label="Заезд">{{ b.checkIn | date:'dd.MM.yyyy' }}</td>
+            <td data-label="Выезд">{{ b.checkOut | date:'dd.MM.yyyy' }}</td>
+            <td data-label="Ночей" class="nights">{{ b.nights }}</td>
+            <td data-label="Сумма" class="price">{{ b.totalPrice }}€</td>
+          </tr>
+          <tr *ngIf="filteredBookings.length === 0">
+            <td colspan="8" class="text-center">Нет бронирований, соответствующих фильтрам</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="filteredBookings.length > 0" class="pagination">
+      <button (click)="prevPage()" [disabled]="currentPage === 1"><i class="fas fa-chevron-left"></i></button>
+      <span>Страница {{ currentPage }} из {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+</div>

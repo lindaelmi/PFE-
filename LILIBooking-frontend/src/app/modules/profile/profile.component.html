@@ -1,0 +1,209 @@
+<div class="profile-page py-5">
+  <div class="container">
+    <!-- Carte principale du profil -->
+    <div class="row justify-content-center mb-5">
+      <div class="col-lg-8">
+        <div class="profile-card glass-card">
+          <div class="card-header">
+            <div class="d-flex align-items-center">
+              <div class="avatar-wrapper me-3">
+                <div class="avatar">
+                  <i class="fas fa-user-circle fa-3x"></i>
+                </div>
+              </div>
+              <div>
+                <h3 class="mb-0">Профиль пользователя</h3>
+                <p class="text-muted mb-0">Управляйте своей информацией</p>
+              </div>
+            </div>
+            <button *ngIf="!editMode" class="btn-edit" (click)="toggleEditMode()">
+              <i class="fas fa-pen me-1"></i> Редактировать
+            </button>
+          </div>
+
+          <div class="card-body">
+            <!-- Mode consultation -->
+            <div *ngIf="!editMode" class="profile-info">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <i class="fas fa-user"></i>
+                    <strong>Полное имя :</strong>
+                    <span>{{ user?.firstName }} {{ user?.lastName }}</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <strong>Email :</strong>
+                    <span>{{ user?.email }}</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <i class="fas fa-phone"></i>
+                    <strong>Телефон :</strong>
+                    <span>{{ user?.phone || 'Не указан' }}</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <i class="fas fa-user-tag"></i>
+                    <strong>Роль :</strong>
+                    <span class="role-badge" [ngClass]="user?.role === 'admin' ? 'admin' : 'user'">
+                      {{ user?.role === 'admin' ? 'Администратор' : 'Пользователь' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mode édition -->
+            <div *ngIf="editMode">
+              <form (ngSubmit)="saveProfile()" #profileForm="ngForm">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Имя</label>
+                    <input type="text" class="form-control" [(ngModel)]="editForm.firstName" name="firstName" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Фамилия</label>
+                    <input type="text" class="form-control" [(ngModel)]="editForm.lastName" name="lastName" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" [(ngModel)]="editForm.email" name="email" disabled>
+                    <small class="text-muted">Email не может быть изменен</small>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Телефон</label>
+                    <input type="tel" class="form-control" [(ngModel)]="editForm.phone" name="phone">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                  <button type="button" class="btn-cancel" (click)="toggleEditMode()">Отмена</button>
+                  <button type="submit" class="btn-save" [disabled]="isLoading">
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1"></span>
+                    <i *ngIf="!isLoading" class="fas fa-save me-1"></i>Сохранить
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Messages -->
+            <div *ngIf="successMessage" class="alert alert-success mt-3">
+              <i class="fas fa-check-circle me-2"></i>{{ successMessage }}
+            </div>
+            <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+              <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs pour favoris et réservations -->
+    <div class="row">
+      <div class="col-12">
+        <div class="glass-card p-3">
+          <ul class="nav nav-tabs" id="profileTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="favorites-tab" data-bs-toggle="tab" data-bs-target="#favorites" type="button" role="tab">
+                <i class="fas fa-heart me-2"></i>Избранное
+                <span class="badge ms-2">{{ favorites.length }}</span>
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings" type="button" role="tab">
+                <i class="fas fa-calendar-alt me-2"></i>Мои бронирования
+                <span class="badge ms-2">{{ bookings.length }}</span>
+              </button>
+            </li>
+          </ul>
+          <div class="tab-content mt-4">
+            <!-- Favoris -->
+            <div class="tab-pane fade show active" id="favorites" role="tabpanel">
+              <div *ngIf="favorites.length === 0" class="empty-state text-center py-5">
+                <i class="fas fa-heart-broken fa-3x text-muted mb-3"></i>
+                <h5>У вас пока нет избранных отелей</h5>
+                <p>Исследуйте наши отели и добавляйте понравившиеся в избранное.</p>
+                <a routerLink="/hotels" class="btn btn-primary mt-2">Найти отели</a>
+              </div>
+              <div *ngIf="favorites.length > 0" class="row g-4">
+                <div class="col-md-6 col-lg-4" *ngFor="let hotel of favorites">
+                  <div class="favorite-card">
+                    <div class="card-img">
+                      <img [src]="getHotelImage(hotel)" alt="{{ hotel.name }}">
+                      <button class="btn-remove-fav" (click)="removeFavorite(hotel.id)" title="Удалить">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                    <div class="card-body">
+                      <h5>{{ hotel.name }}</h5>
+                      <p class="text-muted small">
+                        <i class="fas fa-map-marker-alt me-1"></i> {{ hotel.city }}
+                      </p>
+                      <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="price">{{ hotel.price }}€ <span class="small">/ ночь</span></span>
+                        <a [routerLink]="['/hotel', hotel.id]" class="btn-detail">Подробнее</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Réservations -->
+            <div class="tab-pane fade" id="bookings" role="tabpanel">
+              <div *ngIf="bookings.length === 0" class="empty-state text-center py-5">
+                <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                <h5>У вас пока нет бронирований</h5>
+                <p>Найдите отель и забронируйте номер прямо сейчас.</p>
+                <a routerLink="/hotels" class="btn btn-primary mt-2">Забронировать отель</a>
+              </div>
+              <div *ngIf="bookings.length > 0" class="bookings-list">
+                <div class="booking-item" *ngFor="let booking of bookings">
+                  <div class="booking-header">
+                    <h5>{{ booking.hotelName }}</h5>
+                    <span class="booking-date">{{ booking.checkIn | date:'dd.MM.yyyy' }} - {{ booking.checkOut | date:'dd.MM.yyyy' }}</span>
+                  </div>
+                  <div class="booking-details">
+                    <div class="row">
+                      <div class="col-md-4">
+                        <span><i class="fas fa-bed me-1"></i> {{ booking.roomType }}</span>
+                      </div>
+                      <div class="col-md-4">
+                        <span><i class="fas fa-user me-1"></i> {{ booking.guests }} чел.</span>
+                      </div>
+                      <div class="col-md-4">
+                        <span><i class="fas fa-clock me-1"></i> {{ booking.nights }} ноч(и)</span>
+                      </div>
+                    </div>
+                    <div class="booking-footer mt-3">
+                      <div class="total-price">
+                        <strong>Итого:</strong> {{ booking.totalPrice }}€
+                      </div>
+                      <div class="payment-status" [ngClass]="booking.paymentStatus === 'paid' ? 'paid' : 'pending'">
+                        <i class="fas" [ngClass]="booking.paymentStatus === 'paid' ? 'fa-check-circle' : 'fa-clock'"></i>
+                        {{ booking.paymentStatus === 'paid' ? 'Оплачено' : 'Ожидает оплаты' }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bouton de déconnexion -->
+    <div class="row mt-5">
+      <div class="col-12 text-center">
+        <button class="btn-logout" (click)="logout()">
+          <i class="fas fa-sign-out-alt me-2"></i>Выйти
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

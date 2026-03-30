@@ -1,0 +1,89 @@
+<div class="search-page">
+  <section class="search-header">
+    <div class="container">
+      <h1 class="search-title">Результаты поиска</h1>
+      <p class="search-subtitle">
+        {{ hotels?.length || 0 }} объект(ов) найдено для {{ criteria.destination || 'все направления' }}
+      </p>
+      <div class="search-criteria-badge">
+        <span *ngIf="criteria.checkIn"><i class="fas fa-calendar"></i> {{ criteria.checkIn | date:'dd/MM/yyyy' }}</span>
+        <span *ngIf="criteria.checkOut"> - {{ criteria.checkOut | date:'dd/MM/yyyy' }}</span>
+        <span><i class="fas fa-user"></i> {{ criteria.adults }} взрослый(х)</span>
+        <span *ngIf="criteria.children > 0"><i class="fas fa-child"></i> {{ criteria.children }} ребенок(ка)</span>
+        <span><i class="fas fa-bed"></i> {{ criteria.rooms }} номер(ов)</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="search-results">
+    <div class="container">
+      <!-- LOADING -->
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Загрузка...</span>
+        </div>
+        <p class="mt-3">Поиск...</p>
+      </div>
+
+      <!-- ERREUR -->
+      <div *ngIf="errorMessage && !isLoading" class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle"></i> {{ errorMessage }}
+        <button class="btn btn-sm btn-outline-danger ms-3" (click)="searchHotels()">Повторить</button>
+      </div>
+
+      <!-- AUCUN RÉSULTAT -->
+      <div *ngIf="!isLoading && !errorMessage && (!hotels || hotels.length === 0)" class="text-center py-5">
+        <i class="fas fa-search fa-4x text-muted mb-3"></i>
+        <h3 class="text-muted">Ничего не найдено</h3>
+        <p>Попробуйте изменить параметры поиска.</p>
+        <button class="btn btn-primary" routerLink="/">Новый поиск</button>
+      </div>
+
+      <!-- GRILLE DES RÉSULTATS -->
+      <div *ngIf="!isLoading && hotels && hotels.length > 0" class="hotels-grid">
+        <div class="hotel-card" *ngFor="let hotel of hotels; trackBy: trackByHotelId">
+          <div class="hotel-image" [style.backgroundImage]="'url(' + getHotelImage(hotel) + ')'">
+            <div class="hotel-rating">
+              <i class="fas fa-star"></i> {{ hotel.rating || 4.5 }}
+            </div>
+            <div class="continent-badge">{{ hotel.continent || 'Европа' }}</div>
+          </div>
+          <div class="hotel-info">
+            <div class="hotel-header">
+              <h3>{{ getHotelName(hotel) }}</h3>
+              <div class="hotel-stars">
+                <i class="fas fa-star" *ngFor="let star of getStarsArray(hotel.stars || 4)"></i>
+              </div>
+            </div>
+            <div class="hotel-location">
+              <i class="fas fa-map-marker-alt"></i> {{ getCityName(hotel.city) }}, {{ hotel.country }}
+            </div>
+            <p class="hotel-description">{{ hotel.description }}</p>
+            <div class="hotel-amenities">
+              <span class="amenity" *ngFor="let amenity of (hotel.amenities || []).slice(0, 3)">{{ amenity }}</span>
+              <span class="amenity" *ngIf="hotel.amenities && hotel.amenities.length > 3">+{{ hotel.amenities.length - 3 }}</span>
+            </div>
+            <div class="hotel-footer">
+              <div class="hotel-price">
+                <span class="price-label">От</span>
+                <span class="price-amount">{{ formatPrice(hotel.pricePerNight) }}€</span>
+                <span class="price-period">/ ночь</span>
+                <div class="reviews mt-1">
+                  <small class="text-muted"><i class="fas fa-comment"></i> {{ hotel.reviewCount || 0 }} отзыв(ов)</small>
+                </div>
+              </div>
+              <div class="hotel-actions">
+                <button class="btn btn-primary" [routerLink]="['/hotel', hotel.id]">
+                  Подробнее <i class="fas fa-arrow-right ms-1"></i>
+                </button>
+                <button class="btn btn-outline-primary mt-2" (click)="addToFavorites(hotel)">
+                  <i class="far fa-heart"></i> В избранное
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

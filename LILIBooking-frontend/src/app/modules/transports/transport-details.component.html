@@ -1,0 +1,174 @@
+<div class="container py-5">
+  <!-- Fil d'Ariane -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a routerLink="/">Accueil</a></li>
+          <li class="breadcrumb-item"><a routerLink="/transports">Transports</a></li>
+          <li class="breadcrumb-item active" *ngIf="transport">{{ transport.company }} - {{ transport.departureCity }} → {{ transport.arrivalCity }}</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-3">Chargement du transport...</p>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="errorMessage && !isLoading" class="alert alert-danger">
+    <i class="fas fa-exclamation-triangle me-2"></i> {{ errorMessage }}
+    <button class="btn btn-outline-danger ms-3" (click)="goBack()">Retour</button>
+  </div>
+
+  <!-- Détails du transport -->
+  <div *ngIf="transport && !isLoading" class="row">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white py-3">
+          <div class="d-flex align-items-center">
+            <i [class]="getTypeIcon(transport.type)" style="font-size: 1.75rem;" class="me-3"></i>
+            <div>
+              <h4 class="mb-0">{{ transport.company }}</h4>
+              <span class="badge bg-light text-primary">{{ getTypeLabel(transport.type) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <!-- Trajet -->
+          <div class="transport-route-details mb-4">
+            <div class="row">
+              <div class="col-5 text-center">
+                <div class="fw-bold fs-5">{{ transport.departureCity }}</div>
+                <div class="text-muted">{{ transport.departure }}</div>
+                <div class="display-6 fw-bold text-primary mt-2">{{ transport.departureTime }}</div>
+                <div class="text-muted small">Départ</div>
+              </div>
+              <div class="col-2 text-center">
+                <div class="route-line-vertical">
+                  <i class="fas fa-arrow-right fa-2x text-primary"></i>
+                </div>
+                <div class="fw-semibold mt-2">{{ transport.duration }}</div>
+                <div class="badge bg-info text-white mt-1">Direct</div>
+              </div>
+              <div class="col-5 text-center">
+                <div class="fw-bold fs-5">{{ transport.arrivalCity }}</div>
+                <div class="text-muted">{{ transport.arrival }}</div>
+                <div class="display-6 fw-bold text-primary mt-2">{{ transport.arrivalTime }}</div>
+                <div class="text-muted small">Arrivée</div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4" />
+
+          <!-- Détails supplémentaires -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <h5 class="fw-semibold mb-3">Informations</h5>
+              <ul class="list-unstyled">
+                <li class="mb-2">
+                  <i class="fas fa-barcode me-2 text-primary"></i>
+                  <strong>Référence :</strong> LBT-{{ transport.id }}-{{ transport.departure }}{{ transport.arrival }}
+                </li>
+                <li class="mb-2">
+                  <i class="fas fa-chair me-2 text-primary"></i>
+                  <strong>Places disponibles :</strong> {{ transport.availableSeats }}
+                </li>
+                <li class="mb-2" *ngIf="transport.rating">
+                  <i class="fas fa-star text-warning me-2"></i>
+                  <strong>Note :</strong> {{ transport.rating }}/5 ({{ transport.reviewCount }} avis)
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-6 mb-3">
+              <h5 class="fw-semibold mb-3">Équipements</h5>
+              <div class="d-flex flex-wrap gap-2">
+                <span *ngFor="let amenity of transport.amenities" class="badge bg-light text-dark p-2">
+                  <i class="fas fa-check-circle text-success me-1"></i> {{ amenity }}
+                </span>
+                <span *ngIf="!transport.amenities || transport.amenities.length === 0" class="text-muted">
+                  Aucun équipement spécifié
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4" />
+
+          <!-- Description -->
+          <div *ngIf="transport.description">
+            <h5 class="fw-semibold mb-3">À propos</h5>
+            <p>{{ transport.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colonne latérale : Réservation -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 sticky-top" style="top: 2rem;">
+        <div class="card-header bg-white border-0 pt-4 pb-0">
+          <h4 class="fw-bold mb-0">Réserver ce trajet</h4>
+        </div>
+        <div class="card-body">
+          <!-- Prix -->
+          <div class="price-tag text-center mb-4">
+            <span class="text-muted">Prix par passager</span>
+            <div class="display-4 fw-bold text-primary">{{ transport.price }}€</div>
+          </div>
+
+          <!-- Formulaire de réservation -->
+          <div *ngIf="!bookingSuccess; else successMessage">
+            <div class="mb-3">
+              <label for="passengers" class="form-label fw-semibold">Nombre de passagers</label>
+              <div class="input-group">
+                <button class="btn btn-outline-secondary" type="button" (click)="passengers = passengers > 1 ? passengers - 1 : 1" [disabled]="isBooking">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <input type="number" id="passengers" class="form-control text-center" [(ngModel)]="passengers" min="1" [max]="transport.availableSeats" [disabled]="isBooking" />
+                <button class="btn btn-outline-secondary" type="button" (click)="passengers = passengers < transport.availableSeats ? passengers + 1 : transport.availableSeats" [disabled]="isBooking">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+              <div class="form-text">Maximum : {{ transport.availableSeats }} places</div>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <span>Total</span>
+                <span class="fs-3 fw-bold text-primary">{{ transport.price * passengers }}€</span>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-lg w-100" (click)="bookTransport()" [disabled]="isBooking || passengers < 1 || passengers > transport.availableSeats">
+              <span *ngIf="isBooking" class="spinner-border spinner-border-sm me-2"></span>
+              {{ isBooking ? 'Réservation en cours...' : 'Confirmer la réservation' }}
+            </button>
+          </div>
+
+          <ng-template #successMessage>
+            <div class="alert alert-success text-center py-4">
+              <i class="fas fa-check-circle fa-3x mb-3"></i>
+              <h4 class="alert-heading">Réservation confirmée !</h4>
+              <p>Votre trajet a été réservé avec succès.</p>
+              <hr />
+              <p class="mb-0">Redirection vers vos réservations...</p>
+            </div>
+          </ng-template>
+
+          <div class="mt-3 text-center">
+            <button class="btn btn-link" (click)="goBack()">
+              <i class="fas fa-arrow-left me-1"></i> Retour à la liste
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,148 @@
+@use 'sass:color'; 
+
+// Au lieu de @import, utilisez @use
+@use 'assets/scss/variables' as *;
+@use 'assets/scss/mixins' as *;
+
+// Pour Bootstrap, utilisez @use ou @forward selon votre version
+@use 'bootstrap/scss/bootstrap' as *;
+
+// Ou si vous utilisez une ancienne version qui ne supporte pas @use :
+// @import 'bootstrap/scss/bootstrap';
+/* Styles globaux */ 
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+} 
+
+/* ===== CORRECTION DES SUGGESTIONS DE DESTINATION (FORCE TOTALE) ===== */
+.home-page .hero-section .search-container .destination-suggestions,
+.destination-suggestions {
+  background: white !important;
+  border: 1px solid #dee2e6 !important;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+  color: #212529 !important;
+}
+
+.home-page .hero-section .search-container .destination-suggestions .suggestion-item,
+.destination-suggestions .suggestion-item {
+  color: #212529 !important;
+  background: white !important;
+  border-bottom: 1px solid #f1f1f1 !important;
+}
+
+.home-page .hero-section .search-container .destination-suggestions .suggestion-item:hover,
+.destination-suggestions .suggestion-item:hover {
+  background: #e9ecef !important;
+  color: #0d6efd !important;
+}
+
+.home-page .hero-section .search-container .destination-suggestions .suggestion-item strong,
+.destination-suggestions .suggestion-item strong {
+  color: #0d6efd !important;
+}
+// Variables du thème
+$primary-color: #446965;
+$secondary-color: #005a60;
+$accent-color: #d9bb80;
+$background-color: #f8f9fa;
+$text-color: #333;
+$error-color: #dc3545;
+$success-color: #28a745;
+
+// Couleurs claires pour remplacer lighten()
+$primary-light: color.adjust($primary-color, $lightness: 45%);
+$secondary-light: color.adjust($secondary-color, $lightness: 45%);
+$text-light: color.adjust($text-color, $lightness: 30%);
+
+// Mixins
+@mixin card-shadow {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+// Reset
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: $background-color;
+  color: $text-color;
+  line-height: 1.6;
+}
+
+// Styles pour l'authentification
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $primary-light 0%, $secondary-light 100%);
+  padding: 20px;
+}
+
+.auth-card {
+  @include card-shadow;
+  background: white;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  
+  h2 {
+    color: $secondary-color;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+}
+
+.form-group {
+  margin-bottom: 20px;
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: $secondary-color;
+    font-weight: 500;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+    }
+  }
+}
+
+.btn-primary {
+  background-color: $secondary-color;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  
+  &:hover:not(:disabled) {
+    background-color: color.adjust($secondary-color, $lightness: -10%);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Retirer tout le reste temporairement pour simplifier

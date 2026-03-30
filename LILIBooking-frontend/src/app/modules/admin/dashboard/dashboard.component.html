@@ -1,0 +1,159 @@
+<div class="admin-dashboard">
+  <div class="container-fluid py-4">
+    <!-- Header: only title and date -->
+    <div class="header-section">
+      <div>
+        <h1>Панель администратора</h1>
+        <p class="text-muted">Общая статистика и управление системой</p>
+      </div>
+      <div class="date-badge">
+        <i class="fas fa-calendar-alt"></i> {{ today | date:'dd MMMM yyyy' }}
+      </div>
+    </div>
+
+    <!-- Loading skeleton -->
+    <div *ngIf="isLoading" class="row g-3 mb-4">
+      <div class="col-sm-6 col-md-3" *ngFor="let _ of [1,2,3,4]">
+        <div class="stat-card-skeleton">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="errorMessage && !isLoading" class="alert alert-danger">
+      <i class="fas fa-exclamation-circle me-2"></i> {{ errorMessage }}
+      <button class="btn-retry" (click)="refreshData()">Повторить</button>
+    </div>
+
+    <!-- Stats cards -->
+    <div *ngIf="!isLoading && !errorMessage" class="row g-3 mb-4">
+      <div class="col-sm-6 col-md-3">
+        <div class="stat-card users">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-info">
+            <h3>{{ stats.users }}</h3>
+            <p>Пользователи</p>
+            <span class="trend up">+12%</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="stat-card hotels">
+          <div class="stat-icon"><i class="fas fa-hotel"></i></div>
+          <div class="stat-info">
+            <h3>{{ stats.hotels }}</h3>
+            <p>Отели</p>
+            <span class="trend up">+5</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="stat-card bookings">
+          <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+          <div class="stat-info">
+            <h3>{{ stats.bookings }}</h3>
+            <p>Бронирования</p>
+            <span class="trend up">+23%</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="stat-card revenue">
+          <div class="stat-icon"><i class="fas fa-euro-sign"></i></div>
+          <div class="stat-info">
+            <h3>{{ stats.revenue }}€</h3>
+            <p>Доход</p>
+            <span class="trend up">+8%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div *ngIf="!isLoading && !errorMessage" class="row g-3 mb-4">
+      <div class="col-lg-6">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h5><i class="fas fa-chart-line me-2 text-primary"></i>Динамика бронирований</h5>
+          </div>
+          <div class="chart-body">
+            <canvas #bookingsChart></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h5><i class="fas fa-chart-bar me-2 text-success"></i>Ежемесячный доход</h5>
+          </div>
+          <div class="chart-body">
+            <canvas #revenueChart></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity & Quick Actions -->
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="activity-card">
+          <div class="card-header-custom">
+            <h5><i class="fas fa-clock me-2 text-primary"></i>Последние активности</h5>
+          </div>
+          <div class="card-body-custom">
+            <div *ngIf="recentActivities.length === 0" class="text-muted text-center py-3">
+              Нет недавних активностей
+            </div>
+            <div *ngFor="let activity of recentActivities" class="activity-item">
+              <div class="activity-icon" [class]="activity.type">
+                <i [class]="activity.icon"></i>
+              </div>
+              <div class="activity-details">
+                <p class="activity-text">{{ activity.text }}</p>
+                <span class="activity-time">{{ activity.time }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="quick-actions-card">
+          <div class="card-header-custom">
+            <h5><i class="fas fa-bolt me-2 text-warning"></i>Быстрые действия</h5>
+          </div>
+          <div class="card-body-custom">
+            <div class="row g-2">
+              <div class="col-12 col-md-6">
+                <a routerLink="/admin/hotels" class="quick-btn">
+                  <i class="fas fa-plus-circle"></i> Добавить отель
+                </a>
+              </div>
+              <div class="col-12 col-md-6">
+                <a routerLink="/admin/users" class="quick-btn">
+                  <i class="fas fa-user-plus"></i> Добавить пользователя
+                </a>
+              </div>
+              <div class="col-12 col-md-6">
+                <a routerLink="/admin/bookings" class="quick-btn">
+                  <i class="fas fa-calendar-plus"></i> Посмотреть бронирования
+                </a>
+              </div>
+              <div class="col-12 col-md-6">
+                <a routerLink="/admin/reviews" class="quick-btn">
+                  <i class="fas fa-star"></i> Управлять отзывами
+                </a>
+              </div>
+              <div class="col-12">
+                <a routerLink="/admin/settings" class="quick-btn full">
+                  <i class="fas fa-sliders-h"></i> Настройки системы
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

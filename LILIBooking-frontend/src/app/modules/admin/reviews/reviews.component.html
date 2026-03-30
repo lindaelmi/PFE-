@@ -1,0 +1,117 @@
+<div class="admin-reviews">
+  <div class="container py-4">
+    <!-- Header with stats -->
+    <div class="header-section">
+      <div>
+        <h1>Управление отзывами</h1>
+        <p class="text-muted">Просмотр и управление отзывами клиентов</p>
+      </div>
+      <div class="stats-badge">
+        <span class="stat-item">Всего: {{ reviews.length }}</span>
+        <span class="stat-item avg-rating">Средний рейтинг: {{ averageRating }}/5</span>
+      </div>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="filters-bar">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" placeholder="Поиск по автору, отелю или комментарию..." [(ngModel)]="searchTerm" (input)="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <select [(ngModel)]="filterRating" (change)="applyFilters()">
+          <option value="">Все оценки</option>
+          <option value="5">5 звезд</option>
+          <option value="4">4 звезды</option>
+          <option value="3">3 звезды</option>
+          <option value="2">2 звезды</option>
+          <option value="1">1 звезда</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <select [(ngModel)]="filterHotel" (change)="applyFilters()">
+          <option value="">Все отели</option>
+          <option *ngFor="let hotel of hotelNames" [value]="hotel">{{ hotel }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Loading skeleton -->
+    <div *ngIf="isLoading" class="skeleton-container">
+      <div class="skeleton-card" *ngFor="let _ of [1,2,3,4,5]">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line medium"></div>
+      </div>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="errorMessage && !isLoading" class="alert alert-danger">
+      <i class="fas fa-exclamation-circle me-2"></i> {{ errorMessage }}
+      <button class="btn-retry" (click)="loadReviews()">Повторить</button>
+    </div>
+
+    <!-- Reviews table -->
+    <div *ngIf="!isLoading && !errorMessage" class="table-responsive">
+      <table class="reviews-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Автор</th>
+            <th>Отель</th>
+            <th>Оценка</th>
+            <th>Комментарий</th>
+            <th>Дата</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of paginatedReviews">
+            <td data-label="ID">{{ r.id }}</td>
+            <td data-label="Автор">{{ r.author }}</td>
+            <td data-label="Отель">{{ r.hotel }}</td>
+            <td data-label="Оценка" class="rating">
+              <span *ngFor="let star of getStarsArray(r.rating)" class="star-icon">★</span>
+              <span class="rating-value">{{ r.rating }}/5</span>
+            </td>
+            <td data-label="Комментарий" class="comment">{{ r.comment }}</td>
+            <td data-label="Дата">{{ r.date }}</td>
+            <td data-label="Действия" class="actions">
+              <button class="btn-icon delete" (click)="confirmDelete(r)" title="Удалить">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredReviews.length === 0">
+            <td colspan="7" class="text-center">Нет отзывов, соответствующих фильтрам</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="filteredReviews.length > 0" class="pagination">
+      <button (click)="prevPage()" [disabled]="currentPage === 1"><i class="fas fa-chevron-left"></i></button>
+      <span>Страница {{ currentPage }} из {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages"><i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <!-- Confirmation modal -->
+    <div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+      <div class="modal-container small" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Подтверждение удаления</h3>
+          <button class="close-btn" (click)="closeDeleteModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <p>Вы уверены, что хотите удалить отзыв от <strong>{{ reviewToDelete?.author }}</strong>?</p>
+          <p class="text-muted">Это действие нельзя отменить.</p>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="closeDeleteModal()">Отмена</button>
+          <button class="btn-delete" (click)="deleteReviewConfirmed()">Удалить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,167 @@
+<div class="register-page">
+  <div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+      <div class="col-md-8 col-lg-6">
+        <div class="register-card">
+          <!-- En-tête avec icône -->
+          <div class="card-header text-center">
+            <div class="icon-circle">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <h2 class="mt-3">Регистрация</h2>
+            <p class="text-muted">Создайте аккаунт LILIBooking</p>
+          </div>
+
+          <!-- Formulaire -->
+          <div class="card-body">
+            <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+              <!-- Prénom et Nom (2 colonnes) -->
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="firstName" class="form-label">
+                      <i class="fas fa-user me-2"></i>Имя
+                    </label>
+                    <input
+                      type="text"
+                      id="firstName"
+                      name="firstName"
+                      class="form-control"
+                      [(ngModel)]="firstName"
+                      #firstNameInput="ngModel"
+                      placeholder="Ваше имя"
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="lastName" class="form-label">
+                      <i class="fas fa-user me-2"></i>Фамилия
+                    </label>
+                    <input
+                      type="text"
+                      id="lastName"
+                      name="lastName"
+                      class="form-control"
+                      [(ngModel)]="lastName"
+                      #lastNameInput="ngModel"
+                      placeholder="Ваша фамилия"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="form-group mb-3">
+                <label for="email" class="form-label">
+                  <i class="fas fa-envelope me-2"></i>Email <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  class="form-control"
+                  [(ngModel)]="email"
+                  required
+                  email
+                  #emailInput="ngModel"
+                  placeholder="ваш@email.com"
+                  [class.is-invalid]="emailInput.invalid && emailInput.touched"
+                />
+                <div *ngIf="emailInput.invalid && emailInput.touched" class="invalid-feedback">
+                  Введите корректный email
+                </div>
+              </div>
+
+              <!-- Téléphone -->
+              <div class="form-group mb-3">
+                <label for="phone" class="form-label">
+                  <i class="fas fa-phone-alt me-2"></i>Телефон
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  class="form-control"
+                  [(ngModel)]="phone"
+                  #phoneInput="ngModel"
+                  placeholder="+33 6 12 34 56 78"
+                />
+              </div>
+
+              <!-- Mot de passe -->
+              <div class="form-group mb-3">
+                <label for="password" class="form-label">
+                  <i class="fas fa-lock me-2"></i>Пароль <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  class="form-control"
+                  [(ngModel)]="password"
+                  required
+                  minlength="6"
+                  #passwordInput="ngModel"
+                  placeholder="••••••••"
+                  [class.is-invalid]="passwordInput.invalid && passwordInput.touched"
+                />
+                <div *ngIf="passwordInput.invalid && passwordInput.touched" class="invalid-feedback">
+                  Пароль должен содержать не менее 6 символов
+                </div>
+              </div>
+
+              <!-- Confirmation mot de passe -->
+              <div class="form-group mb-4">
+                <label for="confirmPassword" class="form-label">
+                  <i class="fas fa-check-circle me-2"></i>Подтверждение пароля <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  class="form-control"
+                  [(ngModel)]="confirmPassword"
+                  required
+                  #confirmInput="ngModel"
+                  placeholder="••••••••"
+                  [class.is-invalid]="(password !== confirmPassword || confirmInput.invalid) && confirmInput.touched"
+                />
+                <div *ngIf="password !== confirmPassword && confirmInput.touched" class="invalid-feedback">
+                  Пароли не совпадают
+                </div>
+              </div>
+
+              <!-- Messages -->
+              <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ errorMessage }}
+                <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+              </div>
+
+              <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>{{ successMessage }}
+                <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+              </div>
+
+              <!-- Bouton d'inscription -->
+              <button 
+                type="submit" 
+                class="btn btn-primary w-100 py-3 mb-3"
+                [disabled]="registerForm.invalid || isLoading || password !== confirmPassword">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                <i *ngIf="!isLoading" class="fas fa-user-plus me-2"></i>
+                {{ isLoading ? 'Регистрация...' : 'Зарегистрироваться' }}
+              </button>
+            </form>
+
+            <!-- Lien vers connexion -->
+            <p class="text-center mb-0">
+              Уже есть аккаунт ? 
+              <a routerLink="/connexion" class="login-link">Войти</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,284 @@
+<div class="hotel-details-container" *ngIf="!loading && !error; else loadingOrError">
+  <!-- Fil d'Ariane -->
+  <nav class="breadcrumb-nav">
+    <div class="container">
+      <a routerLink="/" class="breadcrumb-link">Главная</a>
+      <span class="breadcrumb-separator">/</span>
+      <a routerLink="/hotels" class="breadcrumb-link">Отели</a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="breadcrumb-current">{{ hotel?.name }}</span>
+    </div>
+  </nav>
+
+  <!-- Galerie d'images -->
+  <div class="hotel-gallery">
+    <div class="main-image" (click)="openLightbox(0)" 
+         [style.backgroundImage]="'url(' + (hotel?.images?.[0] || getHotelImageUrl(hotel)) + ')'">
+      <div class="gallery-overlay">
+        <i class="fas fa-search-plus"></i>
+      </div>
+    </div>
+    <div class="thumbnail-grid" *ngIf="hotel?.images?.length > 1">
+      <div *ngFor="let img of hotel?.images; let i = index" 
+           class="thumbnail" 
+           [style.backgroundImage]="'url(' + (img || getHotelImageUrl(hotel)) + ')'"
+           (click)="openLightbox(i)"></div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" *ngIf="showLightbox" (click)="closeLightbox()">
+    <div class="lightbox-content" (click)="$event.stopPropagation()">
+      <i class="fas fa-times close-btn" (click)="closeLightbox()"></i>
+      <i class="fas fa-chevron-left nav-btn prev" (click)="prevImage()"></i>
+      <img [src]="(hotel?.images?.[selectedImageIndex] || getHotelImageUrl(hotel))" alt="Изображение" (error)="onImageError($event)">
+      <i class="fas fa-chevron-right nav-btn next" (click)="nextImage()"></i>
+    </div>
+  </div>
+
+  <div class="container hotel-content">
+    <div class="row">
+      <!-- Colonne principale -->
+      <div class="col-lg-8">
+        <div class="hotel-header">
+          <h1 class="hotel-title">{{ hotel?.name }}</h1>
+          <div class="hotel-location">
+            <i class="fas fa-map-marker-alt"></i> {{ hotel?.location }}
+          </div>
+          <div class="hotel-rating">
+            <div class="stars">
+              @for (star of getStarRating(hotel?.rating || 0); track $index) {
+                @if (star === 'full') {
+                  <i class="fas fa-star"></i>
+                } @else if (star === 'half') {
+                  <i class="fas fa-star-half-alt"></i>
+                } @else {
+                  <i class="far fa-star"></i>
+                }
+              }
+            </div>
+            <span class="rating-number">{{ hotel?.rating }}/5</span>
+            <span class="reviews-count">{{ hotel?.reviews?.length }} отзывов</span>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="hotel-description">
+          <h3>Описание</h3>
+          <p>{{ hotel?.description }}</p>
+        </div>
+
+        <!-- Chambres disponibles -->
+        <div class="hotel-rooms">
+          <h3>Доступные номера</h3>
+          @for (room of hotel?.rooms; track $index) {
+            <div class="room-card">
+              <div class="room-info">
+                <h4>{{ room.type }}</h4>
+                <p class="room-description">{{ room.description }}</p>
+                <div class="room-features">
+                  @for (feature of room.features; track $index) {
+                    <span class="feature-badge">{{ feature }}</span>
+                  }
+                </div>
+                <div class="room-capacity">
+                  <i class="fas fa-user"></i> Вместимость: {{ room.capacity }} чел.
+                </div>
+              </div>
+              <div class="room-booking">
+                <div class="room-price">
+                  <span class="price">{{ room.price }}€</span>
+                  <span class="period">/ночь</span>
+                </div>
+                <button class="btn-book" (click)="bookRoom(room.type)">
+                  <i class="fas fa-calendar-check"></i> Забронировать
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Avis clients -->
+        <div class="hotel-reviews">
+          <h3>Отзывы клиентов</h3>
+          <div class="reviews-summary">
+            <div class="average-rating">
+              <span class="rating">{{ hotel?.rating }}</span>/5
+            </div>
+            <div class="reviews-count">На основе {{ hotel?.reviews?.length }} отзывов</div>
+          </div>
+          
+          <div class="reviews-list">
+            @for (review of hotel?.reviews; track $index) {
+              <div class="review-card">
+                <div class="review-header">
+                  <div class="review-avatar">{{ review.avatar }}</div>
+                  <div class="review-author">
+                    <h5>{{ review.author }}</h5>
+                    <div class="review-date">{{ review.date }}</div>
+                  </div>
+                  <div class="review-stars">
+                    @for (star of getStarRating(review.rating); track $index) {
+                      @if (star === 'full') {
+                        <i class="fas fa-star"></i>
+                      } @else {
+                        <i class="far fa-star"></i>
+                      }
+                    }
+                  </div>
+                </div>
+                <p class="review-comment">{{ review.comment }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar - Réservation -->
+      <div class="col-lg-4">
+        <div class="booking-sidebar">
+          <div class="booking-card">
+            <h3>Забронировать</h3>
+            <div class="price-summary">
+              <div class="price-line">
+                <span>От</span>
+                <span class="price-main">{{ hotel?.pricePerNight }}€</span>
+                <span class="price-period">/ночь</span>
+              </div>
+            </div>
+            
+            <form class="booking-form" (ngSubmit)="checkAvailability()" #bookingForm="ngForm">
+              <div class="form-group">
+                <label for="checkin">Дата заезда</label>
+                <input type="date" id="checkin" name="checkin" [(ngModel)]="checkin" 
+                       class="form-control" required [min]="minDate" (change)="onDatesChange()">
+              </div>
+              <div class="form-group">
+                <label for="checkout">Дата выезда</label>
+                <input type="date" id="checkout" name="checkout" [(ngModel)]="checkout" 
+                       class="form-control" required [min]="checkin || minDate" (change)="onDatesChange()">
+              </div>
+              <div class="form-group">
+                <label for="guests">Количество гостей</label>
+                <select id="guests" name="guests" [(ngModel)]="guests" class="form-control" required>
+                  <option value="1">1 человек</option>
+                  <option value="2">2 человека</option>
+                  <option value="3">3 человека</option>
+                  <option value="4">4 человека</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="roomType">Номер</label>
+                <select id="roomType" name="roomType" [(ngModel)]="roomType" class="form-control" required (change)="onRoomChange()">
+                  <option value="">Выберите номер</option>
+                  @for (room of hotel?.rooms; track $index) {
+                    <option [value]="room.type">{{ room.type }} - {{ room.price }}€/ночь</option>
+                  }
+                </select>
+              </div>
+              
+              <!-- Prix total estimé -->
+              <div class="total-price" *ngIf="totalPrice > 0">
+                <span>Предварительная итоговая цена:</span>
+                <span class="total-amount">{{ totalPrice }}€</span>
+                <small>({{ nights }} ночь(и))</small>
+              </div>
+              
+              <button type="submit" class="btn-booking" [disabled]="!bookingForm.form.valid">
+                <i class="fas fa-calendar-check"></i> Проверить наличие
+              </button>
+              
+              <!-- BOUTON RÉSERVER – Apparaît après vérification -->
+              <button *ngIf="totalPrice > 0" type="button" class="btn-booking btn-confirm" (click)="confirmBooking()">
+                <i class="fas fa-check-circle"></i> Подтвердить бронирование
+              </button>
+            </form>
+
+            <div class="contact-info">
+              <h4>Контакты</h4>
+              <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <span>+33 1 23 45 67 89</span>
+              </div>
+              <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <span>contact@hotel.com</span>
+              </div>
+              <div class="contact-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>{{ hotel?.location }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carte interactive -->
+    <div class="row" *ngIf="hotel?.lat && hotel?.lng">
+      <div class="col-12">
+        <div class="hotel-map">
+          <h3>Расположение</h3>
+          <div id="hotel-map" style="height: 400px; border-radius: 15px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hôtels similaires -->
+    <div class="row" *ngIf="similarHotels.length > 0">
+      <div class="col-12">
+        <div class="similar-hotels">
+          <h3>Похожие отели</h3>
+          <div class="similar-hotels-grid">
+            <div class="similar-hotel-card" *ngFor="let hotel of similarHotels" [routerLink]="['/hotel', hotel.id]">
+              <div class="similar-hotel-image" [style.backgroundImage]="'url(' + getHotelImageUrl(hotel) + ')'"></div>
+              <div class="similar-hotel-info">
+                <h4>{{ hotel.name }}</h4>
+                <p>{{ hotel.city }}, {{ hotel.country }}</p>
+                <div class="price">{{ hotel.pricePerNight }}€ / ночь</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingOrError>
+  <div class="loading-container" *ngIf="loading; else errorTemplate">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Загрузка...</span>
+    </div>
+    <p>Загрузка отеля...</p>
+  </div>
+  <ng-template #errorTemplate>
+    <div class="error-container">
+      <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
+      <h3>Ошибка загрузки</h3>
+      <p>Не удалось загрузить информацию об отеле.</p>
+      <button class="btn btn-primary" (click)="loadHotel(route.snapshot.paramMap.get('id')!)">Повторить</button>
+    </div>
+  </ng-template>
+</ng-template>
+
+<!-- Modal de choix du paiement -->
+<div class="modal-overlay" *ngIf="showPaymentModal" (click)="showPaymentModal = false">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3>Выберите способ оплаты</h3>
+    <div class="payment-options">
+      <label class="payment-option">
+        <input type="radio" name="paymentMethod" value="cash" [(ngModel)]="paymentMethod">
+        <i class="fas fa-money-bill-wave"></i> Наличные (при заезде)
+      </label>
+      <label class="payment-option">
+        <input type="radio" name="paymentMethod" value="card" [(ngModel)]="paymentMethod">
+        <i class="fas fa-credit-card"></i> Банковская карта
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="showPaymentModal = false">Отмена</button>
+      <button class="btn-confirm-payment" (click)="processPayment()">Подтвердить бронирование</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,151 @@
+<header class="lili-header" [class.scrolled]="isScrolled">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <!-- Logo -->
+      <a class="navbar-brand" routerLink="/">
+        <span class="logo-icon">🏨</span>
+        <span class="logo-text">
+          <span class="logo-primary">LILI</span>
+          <span class="logo-secondary">Booking</span>
+        </span>
+      </a>
+
+      <!-- Bouton menu mobile -->
+      <button class="navbar-toggler" type="button" (click)="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <!-- Menu principal -->
+      <div class="collapse navbar-collapse" [class.show]="isMobileMenuOpen">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/" routerLinkActive="active" (click)="isMobileMenuOpen = false">
+              <i class="fas fa-home"></i> Accueil
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/hotels" routerLinkActive="active" (click)="isMobileMenuOpen = false">
+              <i class="fas fa-hotel"></i> Hôtels
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/destinations" routerLinkActive="active" (click)="isMobileMenuOpen = false">
+              <i class="fas fa-map-marked-alt"></i> Destinations
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/offers" routerLinkActive="active" (click)="isMobileMenuOpen = false">
+              <i class="fas fa-percent"></i> Offres
+            </a>
+          </li>
+        </ul>
+
+        <!-- Actions utilisateur -->
+        <div class="navbar-actions">
+          <!-- Sélecteur de langue -->
+          <div class="language-selector dropdown">
+            <button class="btn btn-language dropdown-toggle" type="button">
+              {{ currentLanguage | uppercase }}
+            </button>
+            <div class="dropdown-menu">
+              <a *ngFor="let lang of languages" 
+                 class="dropdown-item" 
+                 (click)="changeLanguage(lang.code)">
+                {{ lang.flag }} {{ lang.name }}
+              </a>
+            </div>
+          </div>
+
+          <!-- Boutons connexion/inscription -->
+          <div class="auth-buttons">
+            <button class="btn btn-outline-primary" routerLink="/login">
+              Connexion
+            </button>
+            <button class="btn btn-primary" routerLink="/register">
+              Inscription
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main class="lili-main">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="lili-footer">
+  <div class="container">
+    <div class="row">
+      <!-- Colonne Logo -->
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="footer-logo">
+          <span class="logo-icon">🏨</span>
+          <h3>LILIBooking</h3>
+          <p class="footer-tagline">
+            Votre porte vers les meilleures expériences hôtelières
+          </p>
+        </div>
+        <div class="social-links">
+          <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+      <!-- Liens rapides -->
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h5>Explorer</h5>
+        <ul>
+          <li><a routerLink="/hotels">Hôtels</a></li>
+          <li><a routerLink="/destinations">Destinations</a></li>
+          <li><a routerLink="/offers">Offres spéciales</a></li>
+          <li><a routerLink="/blog">Blog voyage</a></li>
+        </ul>
+      </div>
+
+      <!-- Informations -->
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h5>Informations</h5>
+        <ul>
+          <li><a routerLink="/about">À propos</a></li>
+          <li><a routerLink="/contact">Contact</a></li>
+          <li><a routerLink="/faq">FAQ</a></li>
+          <li><a routerLink="/terms">Conditions</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="col-lg-5 col-md-6 mb-4">
+        <h5>Restez informé</h5>
+        <p>Abonnez-vous à notre newsletter pour recevoir nos meilleures offres</p>
+        <div class="newsletter-form">
+          <input type="email" placeholder="Votre email" class="form-control">
+          <button class="btn-accent">S'abonner</button>
+        </div>
+        <div class="payment-methods mt-4">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-paypal"></i>
+          <i class="fab fa-cc-stripe"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {{ currentYear }} LILIBooking. Tous droits réservés.</p>
+      <div class="footer-links">
+        <a href="#">Confidentialité</a>
+        <a href="#">Cookies</a>
+        <a href="#">Mentions légales</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bouton retour en haut -->
+<button class="scroll-top-btn" (click)="scrollToTop()" *ngIf="isScrolled">
+  <i class="fas fa-chevron-up"></i>
+</button>

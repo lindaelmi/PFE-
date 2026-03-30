@@ -1,0 +1,195 @@
+<div class="container py-5">
+  <!-- Fil d'Ariane -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a routerLink="/">Accueil</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Transports</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- En-tête -->
+  <div class="row mb-5 align-items-center">
+    <div class="col-lg-8">
+      <h1 class="display-5 fw-bold mb-3">Réservez vos transports</h1>
+      <p class="lead text-muted">
+        {{ filteredTransports.length }} trajets disponibles
+      </p>
+    </div>
+    <div class="col-lg-4">
+      <div class="search-box">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0">
+            <i class="fas fa-search text-muted"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control border-start-0 ps-0"
+            placeholder="Rechercher (ville, compagnie...)"
+            [(ngModel)]="searchTerm"
+            (input)="applyFilters()"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="row mb-4 g-3">
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Type</label>
+      <select class="form-select" [(ngModel)]="selectedType" (change)="applyFilters()">
+        <option value="">Tous types</option>
+        <option *ngFor="let type of transportTypes" [value]="type">
+          {{ type | titlecase }}
+        </option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Compagnie</label>
+      <select class="form-select" [(ngModel)]="selectedCompany" (change)="applyFilters()">
+        <option value="">Toutes compagnies</option>
+        <option *ngFor="let company of companies" [value]="company">
+          {{ company }}
+        </option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Prix max.</label>
+      <select class="form-select" [(ngModel)]="maxPrice" (change)="applyFilters()">
+        <option [value]="0">Tous prix</option>
+        <option [value]="50">≤ 50 €</option>
+        <option [value]="100">≤ 100 €</option>
+        <option [value]="200">≤ 200 €</option>
+        <option [value]="300">≤ 300 €</option>
+        <option [value]="500">≤ 500 €</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Trier par</label>
+      <select class="form-select" [(ngModel)]="sortBy" (change)="applyFilters()">
+        <option value="departure">Départ (A → Z)</option>
+        <option value="priceAsc">Prix (croissant)</option>
+        <option value="priceDesc">Prix (décroissant)</option>
+        <option value="duration">Durée</option>
+        <option value="rating">Meilleures notes</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Grille des transports -->
+  <div class="row g-4">
+    <div *ngFor="let transport of paginatedTransports" class="col-lg-6">
+      <div class="card transport-card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <!-- Icône et type -->
+            <div class="d-flex align-items-center">
+              <div class="transport-icon me-3">
+                <i [class]="transport.icon" style="font-size: 2rem;"></i>
+              </div>
+              <div>
+                <h5 class="card-title mb-1">{{ transport.company }}</h5>
+                <span class="badge bg-primary">{{ transport.type | titlecase }}</span>
+              </div>
+            </div>
+            <!-- Note -->
+            <div class="rating" *ngIf="transport.rating">
+              <i class="fas fa-star text-warning"></i>
+              <span class="ms-1 fw-semibold">{{ transport.rating }}</span>
+              <span class="text-muted ms-1">({{ transport.reviewCount }})</span>
+            </div>
+          </div>
+
+          <!-- Trajet -->
+          <div class="transport-route mb-3">
+            <div class="row align-items-center">
+              <div class="col-5 text-center">
+                <div class="fw-bold">{{ transport.departureCity }}</div>
+                <div class="small text-muted">{{ transport.departure }}</div>
+                <div class="fs-5 fw-semibold">{{ transport.departureTime }}</div>
+              </div>
+              <div class="col-2 text-center">
+                <div class="route-line">
+                  <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="small text-muted">{{ transport.duration }}</div>
+              </div>
+              <div class="col-5 text-center">
+                <div class="fw-bold">{{ transport.arrivalCity }}</div>
+                <div class="small text-muted">{{ transport.arrival }}</div>
+                <div class="fs-5 fw-semibold">{{ transport.arrivalTime }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Équipements -->
+          <div class="transport-amenities mb-3" *ngIf="transport.amenities">
+            <span *ngFor="let amenity of transport.amenities.slice(0, 3)" class="badge bg-light text-dark me-1">
+              {{ amenity }}
+            </span>
+            <span *ngIf="transport.amenities.length > 3" class="badge bg-light text-dark">
+              +{{ transport.amenities.length - 3 }}
+            </span>
+          </div>
+
+          <!-- Description -->
+          <p class="card-text small text-muted" *ngIf="transport.description">
+            {{ transport.description }}
+          </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="card-footer bg-white border-0 pb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <span class="h5 fw-bold text-primary">{{ transport.price }}€</span>
+              <span class="text-muted"> / trajet</span>
+              <div class="small text-muted">
+                <i class="fas fa-chair me-1"></i> {{ transport.availableSeats }} places
+              </div>
+            </div>
+            <a [routerLink]="['/transports', transport.id]" class="btn btn-outline-primary btn-sm">
+  Réserver <i class="fas fa-arrow-right ms-1"></i>
+</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aucun résultat -->
+  <div *ngIf="filteredTransports.length === 0" class="row mt-5">
+    <div class="col-12 text-center py-5">
+      <i class="fas fa-train fa-4x text-muted mb-3"></i>
+      <h3 class="h4 text-muted">Aucun transport trouvé</h3>
+      <p class="text-muted">Essayez de modifier vos filtres.</p>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="totalPages > 1" class="row mt-5">
+    <div class="col-12">
+      <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+          </li>
+          <li *ngFor="let page of [].constructor(totalPages); let i = index" class="page-item" [class.active]="currentPage === i + 1">
+            <button class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</button>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
